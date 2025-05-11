@@ -33,6 +33,7 @@ instance/
 .ipynb_checkpoints
 
 # Model files
+*.h5
 *.keras
 *.model
 *.pkl

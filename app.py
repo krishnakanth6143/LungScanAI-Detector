@@ -31,7 +31,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Initialize chatbot
-api_key = "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"
+api_key = "api_key_here"  # Replace with your actual API key
 chatbot = LungCancerChatbot(api_key, model="anthropic/claude-3-haiku")
 chatbot.add_context()
 
