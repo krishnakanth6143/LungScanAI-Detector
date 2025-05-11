@@ -56,12 +56,23 @@ LungScanAI-Detector is an AI-powered web application that analyzes CT scan image
 ## Usage
 
 1. Navigate to the "Analysis" page
+
+![image](https://github.com/user-attachments/assets/b3810a6c-e4ba-4943-a555-df91732d731f)
+
 2. Upload a lung CT scan image (supported formats: PNG, JPG, JPEG)
+
+![image](https://github.com/user-attachments/assets/6a100f6f-0299-4f91-ab5d-0439f8ba4d6d)
+
 3. Wait for the AI to analyze the image
 4. View the detailed analysis results
 5. Review the personalized recommendations
 6. Generate a PDF report if needed
 7. Use the chatbot for additional questions or support
+![image](https://github.com/user-attachments/assets/64c8f643-ac11-405a-9a98-afa4189b28c6)
+
+
+
+![image](https://github.com/user-attachments/assets/8d426182-ad89-4f62-905d-6f8131f1c740)
 
 ## Model Information
 
