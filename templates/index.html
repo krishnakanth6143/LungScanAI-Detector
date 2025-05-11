@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lung Cancer Prediction</title>
+    <style>
+        :root {
+            /* Updated color palette with more modern tones */
+            --primary-color: #4361ee;
+            --primary-light: #4895ef;
+            --primary-dark: #3f37c9;
+            --secondary-color: #2b2d42;
+            --accent-color: #4cc9f0;
+            --success-color: #4ade80;
+            --warning-color: #fb8500;
+            --danger-color: #ef476f;
+            --light-gray: #f8fafc;
+            --neutral-light: #e9ecef;
+            --neutral-medium: #ced4da;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            
+            /* Cancer type specific colors */
+            --adeno-color: #ef476f;
+            --large-cell-color: #fb8500;
+            --squamous-color: #8338ec;
+            --normal-color: #06d6a0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 25px;
+        }
+        
+        /* Enhanced header with animated gradient background */
+        header {
+            background: linear-gradient(-45deg, var(--primary-dark), var(--primary-color), var(--primary-light), var(--accent-color));
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite;
+            color: white;
+            padding: 50px 0;
+            margin-bottom: 60px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Add animated gradient effect */
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.08)" d="M0,0 L100,0 L100,5 C60,20 40,60 0,70 Z"/></svg>');
+            background-size: cover;
+        }
+        
+        header .container {
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Improved navigation with better spacing */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            text-shadow: var(--text-shadow);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-text {
+            flex: 2;
+        }
+        
+        /* Enhanced header icon with animation */
+        .header-icon {
+            flex: 1;
+            text-align: right;
+            font-size: 100px;
+            margin-right: 20px;
+            animation: float 6s ease-in-out infinite;
+            text-shadow: var(--text-shadow);
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        /* Improved typography */
+        h1, h2, h3 {
+            margin-top: 0;
+            color: var(--secondary-color);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        header h1 {
+            font-size: 3.2rem;
+            margin-bottom: 15px;
+            color: white;
+            font-weight: 800;
+            line-height: 1.2;
+            text-shadow: var(--text-shadow);
+        }
+        
+        header p {
+            font-size: 1.4rem;
+            margin-bottom: 35px;
+            opacity: 0.95;
+            max-width: 700px;
+            text-shadow: var(--text-shadow);
+            font-weight: 400;
+        }
+        
+        /* Enhanced card styling */
+        .card {
+            background: linear-gradient(145deg, #ffffff, #f5f7fa);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 35px 30px;
+            margin-bottom: 40px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-top: 5px solid transparent;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            transition: height 0.3s ease;
+            z-index: -1;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card:hover::before {
+            height: 10px;
+        }
+        
+        .upload-section, .result-section {
+            margin-bottom: 50px;
+        }
+        
+        /* Enhanced file upload area */
+        .file-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--accent-color);
+            border-radius: var(--border-radius);
+            padding: 50px;
+            margin: 30px 0;
+            background-color: var(--light-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-upload:hover {
+            background-color: #ecf6ff;
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+        
+        .file-upload-text {
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .upload-icon {
+            font-size: 65px;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Enhanced buttons with more modern styling */
+        .btn {
+            display: inline-block;
+            background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+            color: white;
+            padding: 16px 34px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+            margin-top: 30px;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary-color));
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(to right, var(--secondary-color), #3d4663);
+            box-shadow: 0 8px 20px rgba(43, 45, 66, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(to right, #232638, var(--secondary-color));
+            box-shadow: 0 12px 25px rgba(43, 45, 66, 0.4);
+        }
+        
+        /* Enhanced image display */
+        img {
+            max-width: 100%;
+            height: auto;
+            max-height: 550px;
+            margin: 30px 0;
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border: 3px solid #f0f4f9;
+            transition: transform 0.3s ease;
+        }
+        
+        img:hover {
+            transform: scale(1.02);
+        }
+        
+        /* Enhanced probabilities styling */
+        .probabilities {
+            text-align: left;
+            margin: 40px auto;
+            max-width: 750px;
+            background-color: var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+        
+        .probability-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 22px;
+            align-items: center;
+        }
+        
+        .progress-bar {
+            height: 26px;
+            background-color: var(--neutral-light);
+            border-radius: 13px;
+            overflow: hidden;
+            flex-grow: 1;
+            margin: 0 20px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress {
+            height: 100%;
+            border-radius: 13px;
+            transition: width 1.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+            background-size: 20px 20px;
+            background-image: linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.2) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0.2) 75%,
+                transparent 75%,
+                transparent
+            );
+            animation: progress-bar-stripes 1.5s linear infinite;
+        }
+        
+        @keyframes progress-bar-stripes {
+            0% { background-position: 0 0; }
+            100% { background-position: 20px 0; }
+        }
+        
+        .class-name {
+            min-width: 180px;
+            font-weight: 600;
+            color: var(--secondary-color);
+            font-size: 1rem;
+        }
+        
+        .percentage {
+            min-width: 80px;
+            text-align: right;
+            font-weight: 700;
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+        
+        /* Enhanced prediction result display */
+        .prediction-result {
+            font-size: 30px;
+            font-weight: 800;
+            margin: 35px 0;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            background: linear-gradient(145deg, rgba(46, 204, 113, 0.1), rgba(46, 204, 113, 0.15));
+            display: inline-block;
+            color: var(--secondary-color);
+            border-left: 5px solid var(--success-color);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.2);
+            transform: translateZ(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .prediction-result:hover {
+            transform: translateY(-5px);
+        }
+        
+        /* Enhanced loading indicator */
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 35px 0;
+        }
+        
+        .spinner {
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border-left-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        #file-name {
+            margin-top: 15px;
+            color: var(--primary-color);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        /* Enhanced recommendation box styling */
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            padding: 20px;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+        
+        .card-header h4 {
+            margin: 0;
+            color: white;
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+        }
+        
+        .card-body {
+            padding: 25px;
+        }
+        
+        .card-title {
+            color: var(--secondary-color);
+            margin-top: 0;
+            font-size: 1.4rem;
+            border-bottom: 2px solid var(--neutral-light);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .list-group {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .list-group-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--neutral-light);
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+        
+        .list-group-item:before {
+            content: "•";
+            color: var(--primary-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-right: 10px;
+        }
+        
+        .personal-support-box {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffb74d;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(255, 183, 77, 0.15);
+            transition: transform 0.3s ease;
+        }
+        
+        .personal-support-box:hover {
+            transform: translateY(-5px);
+        }
+        
+        .personal-support-box h6 {
+            color: #e65100;
+            margin-top: 0;
+            font-size: 1.1rem;
+        }
+        
+        .ai-badge {
+            background-color: #e3f2fd;
+            color: var(--primary-color);
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 8px;
+            letter-spacing: 0.5px;
+        }
+        
+        .resource-icon {
+            color: var(--primary-color);
+            margin-right: 8px;
+        }
+        
+        .footer {
+            margin-top: 80px;
+            padding: 30px 0;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 15px;
+            border-top: 1px solid var(--neutral-light);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                max-width: 95%;
+            }
+            
+            .probabilities {
+                width: 95%;
+                padding: 20px 15px;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            header {
+                padding: 30px 0;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .header-icon {
+                margin-top: 30px;
+                margin-right: 0;
+                text-align: center;
+                font-size: 80px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .card {
+                padding: 25px 20px;
+            }
+            
+            .prediction-result {
+                font-size: 24px;
+                padding: 15px;
+            }
+        }
+        
+        /* PDF Download Button Styles */
+        .btn-download {
+            background: linear-gradient(to right, #2c3e50, #4a6572);
+            box-shadow: 0 8px 20px rgba(44, 62, 80, 0.3);
+            margin-left: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-download:hover {
+            background: linear-gradient(to right, #1e2a36, #2c3e50);
+            box-shadow: 0 12px 25px rgba(44, 62, 80, 0.4);
+        }
+        
+        .download-icon {
+            font-size: 1.2rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .spinner-small {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+        
+        @media (max-width: 768px) {
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn-download {
+                margin-left: 0;
+                margin-top: 15px;
+            }
+        }
+        
+        /* Google Search CTA styling */
+        .google-search-cta {
+            background: linear-gradient(145deg, #f5f9ff, #e3f2fd);
+            padding: 35px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin: 40px 0;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            border-left: 5px solid var(--primary-color);
+        }
+        
+        .google-search-cta:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .google-search-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+            color: white;
+            padding: 16px 34px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .google-search-btn:hover {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary-color));
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(67, 97, 238, 0.4);
+        }
+        
+        .google-icon {
+            font-family: 'Product Sans', Arial, sans-serif;
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: white;
+            color: var(--primary-color);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .search-tip {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+        
+        @media (max-width: 768px) {
+            .google-search-btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">LungDetect</a>
+                <div class="nav-links">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/analysis" class="nav-link active">CT Scan Analysis</a>
+                    <a href="/#about" class="nav-link">About</a>
+                    <a href="/contact" class="nav-link">Contact</a>
+                </div>
+            </nav>
+            
+            <div class="header-content">
+                <div class="header-text">
+                    <h1>Lung Cancer CT Scan Analysis</h1>
+                    <p>Advanced technology-powered tool for automated lung cancer detection from CT scan images</p>
+                </div>
+                <div class="header-icon">
+                    🫁
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="upload-section card">
+            <h2>Upload CT Scan Image</h2>
+            <p>Select or drag a CT scan image file to analyze</p>
+            
+            <form method="post" enctype="multipart/form-data" id="upload-form">
+                <div class="file-upload" id="file-drop-area">
+                    <div class="upload-icon">⬆️</div>
+                    <div class="file-upload-text">Drag and drop your image here</div>
+                    <div>or</div>
+                    <input type="file" name="file" id="file-input" class="file-input" accept="image/*">
+                    <button type="button" class="btn" id="browse-button">Browse Files</button>
+                </div>
+                <div id="file-name"></div>
+                <button type="submit" class="btn" id="upload-button">Analyze Image</button>
+            </form>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Analyzing image, please wait...</p>
+            </div>
+        </div>
+
+        {% if filename %}
+        <div class="result-section card">
+            <h2>Analysis Results</h2>
+            <div class="image-container">
+                <img src="{{ url_for('static', filename='uploads/' + filename) }}" alt="Uploaded CT Scan">
+            </div>
+            
+            <div class="prediction-result">
+                Predicted: <span id="prediction">{{ prediction|replace('.', ' ')|title }}</span>
+            </div>
+            
+            <div class="probabilities">
+                <h3>Prediction Probabilities</h3>
+                {% if probabilities is string or probabilities is mapping %}
+                    <!-- ... existing code for string probabilities ... -->
+                {% else %}
+                    {% set class_names = ['adenocarcinoma', 'large.cell.carcinoma', 'normal', 'squamous.cell.carcinoma'] %}
+                    {% for i in range(probabilities|length) %}
+                    {% set class_name = class_names[i] if i < class_names|length else 'Class ' + i|string %}
+                    {% set display_name = class_name|replace('.', ' ')|title %}
+                    {% set probability = (probabilities[i] * 100)|round(2) %}
+                    <div class="probability-item">
+                        <span class="class-name">{{ display_name }}</span>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: {{ probability }}%; background-color: 
+                                {% if 'adenocarcinoma' in class_name %}var(--adeno-color){% 
+                                elif 'large.cell' in class_name %}var(--large-cell-color){% 
+                                elif 'squamous.cell' in class_name %}var(--squamous-color){% 
+                                else %}var(--normal-color){% endif %};">
+                            </div>
+                        </div>
+                        <span class="percentage">{{ probability }}%</span>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            
+            {% if recommendation %}
+            <div class="container mt-4" id="recommendation-section">
+              <div class="card">
+                <div class="card-header">
+                  <h4>
+                    <span class="ai-icon">🤖</span> 
+                    Smart Recommendations
+                  </h4>
+                </div>
+                <div class="card-body">
+                  <h5 class="card-title">{{ prediction|title|replace('.', ' ') }} - Clinical Guidance</h5>
+                  <p class="card-text">{{ recommendation.description }}</p>
+                  <h6 class="mt-3">Recommended Next Steps:</h6>
+                  <ul class="list-group list-group-flush">
+                    {% for step in recommendation.next_steps %}
+                    <li class="list-group-item">{{ step }}</li>
+                    {% endfor %}
+                  </ul>
+                  
+                  {% if recommendation.ai_personal_support %}
+                  <div class="personal-support-box">
+                    <h6>Personal Support Recommendation:</h6>
+                    <p class="mb-0">{{ recommendation.ai_personal_support }}</p>
+                  </div>
+                  {% endif %}
+                  
+                  {% if recommendation.resources %}
+                  <h6 class="mt-4">Helpful Resources:</h6>
+                  <ul class="list-group list-group-flush">
+                    {% for resource in recommendation.resources %}
+                    <li class="list-group-item">
+                      {{ resource }}
+                    </li>
+                    {% endfor %}
+                  </ul>
+                  {% endif %}
+                  
+                  <div class="mt-3">
+                    <p class="text-muted">
+                      <small>
+                        <span class="ai-badge">ENHANCED</span>
+                        These recommendations are generated based on the scan analysis.
+                        Please consult with healthcare professionals for personalized medical advice.
+                      </small>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            
+            <div class="action-buttons">
+                <a href="/analysis" class="btn btn-secondary">Analyze Another Image</a>
+                <button class="btn btn-download" id="download-pdf-btn">
+                    <span class="download-icon">📥</span> Download Results as PDF
+                </button>
+            </div>
+        </div>
+        
+        <!-- Added Google Search CTA Section -->
+        <div class="google-search-cta">
+            <p>Need to find a specialist to discuss these results?</p>
+            <div class="search-buttons">
+                <a href="https://www.google.com/search?q=lung+cancer+doctors+near+me" target="_blank" class="google-search-btn">
+                    <span class="google-icon">G</span>
+                    Find Lung Cancer Doctors Near Me
+                </a>
+            </div>
+            <p class="search-tip">This will open Google search in a new tab to help you find lung specialists in your area.</p>
+        </div>
+        {% endif %}
+        
+        <div class="footer">
+            <p>Lung Cancer CT Scan Prediction Tool | For research purposes only</p>
+            <p>This tool is not meant to replace professional medical diagnosis</p>
+        </div>
+    </div>
+      <!-- Chatbot Button -->
+    <div class="chatbot-toggle" id="chatbot-toggle">
+        <i>💬</i>
+    </div>
+    
+    <!-- Chatbot Container -->
+    <div class="chatbot-container chatbot-hidden" id="chatbot-container">
+        <div class="chatbot-header" id="chatbot-header">
+            <div class="chatbot-title">
+                <span>🫁</span>
+                <span>LungCare Assistant</span>
+            </div>
+            <button class="chatbot-close" id="chatbot-close">×</button>
+        </div>
+        <div class="chatbot-body">
+            <div class="chatbot-messages" id="chatbot-messages"></div>
+        </div>
+        <div class="chatbot-input-area">
+            <input type="text" class="chatbot-input" id="chatbot-input" placeholder="Ask about lung cancer...">
+            <button class="chatbot-send-btn" id="chatbot-send-btn">➤</button>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropArea = document.getElementById('file-drop-area');
+            const fileInput = document.getElementById('file-input');
+            const browseButton = document.getElementById('browse-button');
+            const fileName = document.getElementById('file-name');
+            const form = document.getElementById('upload-form');
+            const loading = document.getElementById('loading');
+            
+            // Open file dialog when browse button is clicked
+            browseButton.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            // Display file name when file is selected
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length > 0) {
+                    fileName.textContent = 'Selected file: ' + fileInput.files[0].name;
+                    fileName.style.color = '#4361ee';
+                    dropArea.style.borderColor = 'var(--success-color)';
+                    dropArea.style.backgroundColor = '#f0fff4';
+                }
+            });
+            
+            // Handle drag and drop events
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                dropArea.style.backgroundColor = '#e3f2fd';
+                dropArea.style.borderColor = 'var(--primary-color)';
+                dropArea.style.transform = 'scale(1.02)';
+            }
+            
+            function unhighlight() {
+                dropArea.style.backgroundColor = 'var(--light-gray)';
+                dropArea.style.transform = 'scale(1)';
+            }
+            
+            dropArea.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                fileInput.files = files;
+                
+                if (files.length > 0) {
+                    fileName.textContent = 'Selected file: ' + files[0].name;
+                    fileName.style.color = '#4361ee';
+                    dropArea.style.borderColor = 'var(--success-color)';
+                    dropArea.style.backgroundColor = '#f0fff4';
+                }
+            }
+            
+            // Show loading spinner when form is submitted
+            form.addEventListener('submit', function() {
+                loading.style.display = 'block';
+                document.getElementById('upload-button').disabled = true;
+                document.getElementById('upload-button').style.opacity = '0.7';
+            });
+            
+            // PDF Download Functionality
+            const downloadPdfBtn = document.getElementById('download-pdf-btn');
+            if (downloadPdfBtn) {
+                downloadPdfBtn.addEventListener('click', generatePDF);
+            }
+            
+            function generatePDF() {
+                // Show loading indicator for PDF generation
+                const pdfBtn = document.getElementById('download-pdf-btn');
+                const originalBtnText = pdfBtn.innerHTML;
+                pdfBtn.innerHTML = '<span class="spinner-small"></span> Generating PDF...';
+                pdfBtn.disabled = true;
+                
+                // First, get the image and convert it to a data URL
+                const imageElement = document.querySelector('.image-container img');
+                
+                // Use setTimeout to allow the UI to update before heavy PDF generation
+                setTimeout(() => {
+                    try {
+                        // Convert image to data URL if image exists
+                        let imageDataUrl = null;
+                        let imageAspectRatio = 1;
+                        
+                        if (imageElement) {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            
+                            // Calculate aspect ratio for proper sizing in PDF
+                            imageAspectRatio = imageElement.naturalHeight / imageElement.naturalWidth;
+                            
+                            // Set canvas size to match the image's natural size (or limit it for very large images)
+                            const maxWidth = Math.min(imageElement.naturalWidth, 1500); // Limit max width
+                            const scaleFactor = maxWidth / imageElement.naturalWidth;
+                            canvas.width = maxWidth;
+                            canvas.height = imageElement.naturalHeight * scaleFactor;
+                            
+                            // Draw image on canvas
+                            ctx.drawImage(imageElement, 0, 0, canvas.width, canvas.height);
+                            
+                            // Get data URL from canvas
+                            try {
+                                imageDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                            } catch (e) {
+                                console.error('Error converting image to data URL:', e);
+                                // Continue without image if we can't get the data URL
+                            }
+                        }
+                        
+                        const { jsPDF } = window.jspdf;
+                        const doc = new jsPDF('p', 'mm', 'a4');
+                        
+                        // Define page dimensions
+                        const pageWidth = doc.internal.pageSize.getWidth();
+                        const pageHeight = doc.internal.pageSize.getHeight();
+                        const margin = 20;
+                        
+                        // Add header
+                        doc.setFontSize(22);
+                        doc.setTextColor(67, 97, 238);
+                        doc.text('LungDetect - Analysis Results', pageWidth / 2, margin, { align: 'center' });
+                        
+                        // Add date
+                        const today = new Date();
+                        doc.setFontSize(10);
+                        doc.setTextColor(100, 100, 100);
+                        doc.text('Report generated: ' + today.toLocaleDateString() + ' ' + today.toLocaleTimeString(), pageWidth / 2, margin + 8, { align: 'center' });
+                        
+                        // Add image if available
+                        let yPosition = margin + 15;
+                        if (imageDataUrl) {
+                            // Calculate image dimensions to maintain aspect ratio
+                            const imageWidth = pageWidth - (margin * 2);
+                            const imageHeight = imageWidth * imageAspectRatio;
+                            
+                            // Limit image height to fit nicely on page
+                            const maxImageHeight = 100; // in mm
+                            const finalImageHeight = Math.min(imageHeight, maxImageHeight);
+                            const finalImageWidth = finalImageHeight / imageAspectRatio;
+                            
+                            // Add image to PDF centered horizontally
+                            const xPosition = (pageWidth - finalImageWidth) / 2;
+                            doc.addImage(imageDataUrl, 'JPEG', xPosition, yPosition, finalImageWidth, finalImageHeight);
+                            
+                            // Add image caption
+                            yPosition += finalImageHeight + 5;
+                            doc.setFontSize(10);
+                            doc.setTextColor(100, 100, 100);
+                            doc.text('CT Scan Image Used for Analysis', pageWidth / 2, yPosition, { align: 'center' });
+                            
+                            yPosition += 10;
+                        }
+                        
+                        // Add prediction with colored box background
+                        const prediction = document.getElementById('prediction').textContent;
+                        yPosition += 5;
+                        
+                        // Draw prediction background
+                        doc.setFillColor(245, 247, 250);
+                        doc.roundedRect(margin, yPosition, pageWidth - (margin * 2), 20, 3, 3, 'F');
+                        
+                        // Add prediction text
+                        doc.setFontSize(16);
+                        doc.setTextColor(43, 45, 66);
+                        doc.text('CT Scan Analysis Result:', margin + 5, yPosition + 8);
+                        doc.setFontSize(14);
+                        
+                        // Set color based on prediction
+                        if (prediction.toLowerCase().includes('normal')) {
+                            doc.setTextColor(6, 214, 160); // normal color
+                        } else {
+                            doc.setTextColor(239, 71, 111); // cancer color
+                        }
+                        
+                        doc.setFont(undefined, 'bold');
+                        doc.text(prediction, margin + 80, yPosition + 8);
+                        doc.setFont(undefined, 'normal');
+                        
+                        // Add probabilities
+                        yPosition += 25;
+                        doc.setFontSize(16);
+                        doc.setTextColor(43, 45, 66);
+                        doc.text('Prediction Probabilities:', margin, yPosition);
+                        
+                        // Get probability data
+                        const probabilityItems = document.querySelectorAll('.probability-item');
+                        yPosition += 8;
+                        
+                        // Draw probability graph
+                        probabilityItems.forEach(item => {
+                            const className = item.querySelector('.class-name').textContent;
+                            const percentage = item.querySelector('.percentage').textContent;
+                            const percentageValue = parseFloat(percentage);
+                            
+                            // Draw label
+                            doc.setFontSize(11);
+                            doc.setTextColor(43, 45, 66);
+                            doc.text(className + ':', margin, yPosition + 4);
+                            
+                            // Draw background bar
+                            doc.setFillColor(233, 236, 239);
+                            doc.roundedRect(margin + 50, yPosition, 100, 8, 2, 2, 'F');
+                            
+                            // Draw progress bar with color
+                            let barColor;
+                            if (className.toLowerCase().includes('adenocarcinoma')) {
+                                barColor = [239, 71, 111]; // adeno color
+                            } else if (className.toLowerCase().includes('large cell')) {
+                                barColor = [251, 133, 0]; // large cell color
+                            } else if (className.toLowerCase().includes('squamous')) {
+                                barColor = [131, 56, 236]; // squamous color
+                            } else {
+                                barColor = [6, 214, 160]; // normal color
+                            }
+                            
+                            doc.setFillColor(barColor[0], barColor[1], barColor[2]);
+                            const barWidth = Math.min(percentageValue, 100) * 100 / 100;
+                            if (barWidth > 0) {
+                                doc.roundedRect(margin + 50, yPosition, barWidth, 8, 2, 2, 'F');
+                            }
+                            
+                            // Draw percentage
+                            doc.setFontSize(10);
+                            doc.setTextColor(43, 45, 66);
+                            doc.text(percentage, margin + 155, yPosition + 4, { align: 'right' });
+                            
+                            yPosition += 12;
+                        });
+                        
+                        // Add recommendations if available
+                        const recommendationSection = document.getElementById('recommendation-section');
+                        if (recommendationSection) {
+                            yPosition += 10;
+                            
+                            // Add page break if needed
+                            if (yPosition > pageHeight - 70) {
+                                doc.addPage();
+                                yPosition = margin;
+                            }
+                            
+                            // Add section header with background
+                            doc.setFillColor(67, 97, 238, 0.1);
+                            doc.roundedRect(margin, yPosition, pageWidth - (margin * 2), 10, 2, 2, 'F');
+                            
+                            doc.setFontSize(16);
+                            doc.setTextColor(67, 97, 238);
+                            doc.setFont(undefined, 'bold');
+                            doc.text('Medical Recommendations', margin + 5, yPosition + 7);
+                            doc.setFont(undefined, 'normal');
+                            
+                            yPosition += 15;
+                            
+                            // Description
+                            const description = recommendationSection.querySelector('.card-text').textContent;
+                            doc.setFontSize(11);
+                            doc.setTextColor(60, 60, 60);
+                            
+                            // Split description into multiple lines if needed
+                            const splitDescription = doc.splitTextToSize(description, pageWidth - (margin * 2));
+                            doc.text(splitDescription, margin, yPosition);
+                            yPosition += splitDescription.length * 6 + 5;
+                            
+                            // Check for page break before next steps
+                            if (yPosition > pageHeight - 50) {
+                                doc.addPage();
+                                yPosition = margin;
+                            }
+                            
+                            // Next steps with bullet points
+                            doc.setFontSize(14);
+                            doc.setTextColor(43, 45, 66);
+                            doc.setFont(undefined, 'bold');
+                            doc.text('Recommended Next Steps:', margin, yPosition);
+                            doc.setFont(undefined, 'normal');
+                            yPosition += 8;
+                            
+                            const nextSteps = recommendationSection.querySelectorAll('.list-group-item');
+                            nextSteps.forEach(step => {
+                                // Check for page break within steps
+                                if (yPosition > pageHeight - 30) {
+                                    doc.addPage();
+                                    yPosition = margin;
+                                }
+                                
+                                doc.setFontSize(11);
+                                doc.setTextColor(60, 60, 60);
+                                const stepText = '• ' + step.textContent.trim();
+                                const splitStep = doc.splitTextToSize(stepText, pageWidth - (margin * 2) - 5);
+                                doc.text(splitStep, margin, yPosition);
+                                yPosition += splitStep.length * 6 + 3;
+                            });
+                            
+                            // Personal support recommendation if available
+                            const personalSupport = recommendationSection.querySelector('.personal-support-box');
+                            if (personalSupport) {
+                                // Check for page break
+                                if (yPosition > pageHeight - 50) {
+                                    doc.addPage();
+                                    yPosition = margin;
+                                }
+                                
+                                yPosition += 5;
+                                
+                                // Add background for personal support
+                                doc.setFillColor(255, 248, 225);
+                                doc.roundedRect(margin, yPosition, pageWidth - (margin * 2), 8, 2, 2, 'F');
+                                
+                                doc.setFontSize(14);
+                                doc.setTextColor(230, 81, 0);
+                                doc.setFont(undefined, 'bold');
+                                doc.text('Personal Support Recommendation:', margin + 5, yPosition + 6);
+                                doc.setFont(undefined, 'normal');
+                                yPosition += 12;
+                                
+                                const supportText = personalSupport.querySelector('p').textContent;
+                                doc.setFontSize(11);
+                                doc.setTextColor(60, 60, 60);
+                                const splitSupportText = doc.splitTextToSize(supportText, pageWidth - (margin * 2) - 5);
+                                doc.text(splitSupportText, margin, yPosition);
+                                yPosition += splitSupportText.length * 6 + 5;
+                            }
+                            
+                            // Resources if available
+                            const resourcesHeader = recommendationSection.querySelector('h6.mt-4');
+                            if (resourcesHeader && resourcesHeader.textContent.includes('Resources')) {
+                                // Check for page break
+                                if (yPosition > pageHeight - 50) {
+                                    doc.addPage();
+                                    yPosition = margin;
+                                }
+                                
+                                yPosition += 5;
+                                doc.setFontSize(14);
+                                doc.setTextColor(43, 45, 66);
+                                doc.setFont(undefined, 'bold');
+                                doc.text('Helpful Resources:', margin, yPosition);
+                                doc.setFont(undefined, 'normal');
+                                yPosition += 8;
+                                
+                                const resources = recommendationSection.querySelectorAll('.list-group-item:not(:empty)');
+                                resources.forEach(resource => {
+                                    if (resource.textContent.includes('🔗')) {
+                                        // Check for page break within resources
+                                        if (yPosition > pageHeight - 30) {
+                                            doc.addPage();
+                                            yPosition = margin;
+                                        }
+                                        
+                                        doc.setFontSize(11);
+                                        doc.setTextColor(60, 60, 60);
+                                        const resourceText = '• ' + resource.textContent.replace('🔗', '').trim();
+                                        const splitResource = doc.splitTextToSize(resourceText, pageWidth - (margin * 2) - 5);
+                                        doc.text(splitResource, margin, yPosition);
+                                        yPosition += splitResource.length * 6 + 3;
+                                    }
+                                });
+                            }
+                        }
+                        
+                        // Add footer disclaimer on the last page
+                        doc.setFontSize(9);
+                        doc.setTextColor(150, 150, 150);
+                        
+                        const footerText1 = 'DISCLAIMER: This analysis is provided for informational purposes only and should not';
+                        const footerText2 = 'be considered a medical diagnosis. Please consult with healthcare professionals for proper medical advice.';
+                        
+                        doc.text(footerText1, margin, pageHeight - 15);
+                        doc.text(footerText2, margin, pageHeight - 10);
+                        
+                        // Add page numbers
+                        const totalPages = doc.internal.getNumberOfPages();
+                        for (let i = 1; i <= totalPages; i++) {
+                            doc.setPage(i);
+                            doc.setFontSize(10);
+                            doc.setTextColor(150, 150, 150);
+                            doc.text(`Page ${i} of ${totalPages}`, pageWidth - margin, pageHeight - 10);
+                        }
+                        
+                        // Save the PDF
+                        doc.save('LungDetect_Analysis_' + today.toISOString().slice(0,10) + '.pdf');
+                        
+                        // Reset button
+                        pdfBtn.innerHTML = originalBtnText;
+                        pdfBtn.disabled = false;
+                        
+                    } catch (error) {
+                        console.error('Error generating PDF:', error);
+                        alert('There was an error generating the PDF. Please try again.');
+                        pdfBtn.innerHTML = originalBtnText;
+                        pdfBtn.disabled = false;
+                    }
+                }, 200);
+            }
+        });
+    </script>
+</body>
+</html>

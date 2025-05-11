@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find a Specialist | LungDetect</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-light: #4895ef;
+            --primary-dark: #3f37c9;
+            --secondary-color: #2b2d42;
+            --accent-color: #4cc9f0;
+            --success-color: #4ade80;
+            --warning-color: #fb8500;
+            --danger-color: #ef476f;
+            --light-gray: #f8fafc;
+            --neutral-light: #e9ecef;
+            --neutral-medium: #ced4da;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 25px;
+        }
+        
+        header {
+            background: linear-gradient(-45deg, var(--primary-dark), var(--primary-color), var(--primary-light), var(--accent-color));
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite;
+            color: white;
+            padding: 50px 0;
+            margin-bottom: 60px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.08)" d="M0,0 L100,0 L100,5 C60,20 40,60 0,70 Z"/></svg>');
+            background-size: cover;
+        }
+        
+        header .container {
+            position: relative;
+            z-index: 2;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            text-shadow: var(--text-shadow);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-text {
+            flex: 2;
+        }
+        
+        .header-icon {
+            flex: 1;
+            text-align: right;
+            font-size: 100px;
+            margin-right: 20px;
+            animation: float 6s ease-in-out infinite;
+            text-shadow: var(--text-shadow);
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        h1, h2, h3 {
+            margin-top: 0;
+            color: var(--secondary-color);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        header h1 {
+            font-size: 3.2rem;
+            margin-bottom: 15px;
+            color: white;
+            font-weight: 800;
+            line-height: 1.2;
+            text-shadow: var(--text-shadow);
+        }
+        
+        header p {
+            font-size: 1.4rem;
+            margin-bottom: 35px;
+            opacity: 0.95;
+            max-width: 700px;
+            text-shadow: var(--text-shadow);
+            font-weight: 400;
+        }
+        
+        .find-doctor-section, .tips-section {
+            background: linear-gradient(145deg, #ffffff, #f5f7fa);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 35px 30px;
+            margin-bottom: 50px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-top: 5px solid transparent;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .find-doctor-section::before, .tips-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            transition: height 0.3s ease;
+            z-index: -1;
+        }
+        
+        .find-doctor-section:hover::before, .tips-section:hover::before {
+            height: 10px;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .section-icon {
+            font-size: 42px;
+            margin-right: 15px;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .specialist-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin: 35px 0;
+        }
+        
+        .specialist-card {
+            background-color: var(--light-gray);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border-top: 3px solid transparent;
+            position: relative;
+        }
+        
+        .specialist-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+        
+        .specialist-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .specialist-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .specialist-card h4::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+        
+        .specialist-card:hover h4::after {
+            width: 100%;
+        }
+        
+        .google-search-cta, .find-doctor-cta {
+            background: linear-gradient(145deg, #f5f9ff, #e3f2fd);
+            padding: 35px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-top: 40px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            border-left: 5px solid var(--primary-color);
+        }
+        
+        .google-search-cta:hover, .find-doctor-cta:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .google-search-btn, .locate-doctor-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+            color: white;
+            padding: 16px 34px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .google-search-btn:hover, .locate-doctor-btn:hover {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary-color));
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(67, 97, 238, 0.4);
+        }
+        
+        .google-icon {
+            font-family: 'Product Sans', Arial, sans-serif;
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: white;
+            color: var(--primary-color);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 35px 0;
+        }
+        
+        .tip-card {
+            background-color: var(--light-gray);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            transition: all 0.3s ease;
+            border-top: 3px solid var(--warning-color);
+        }
+        
+        .tip-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tip-number {
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--warning-color), #ff7e00);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(251, 133, 0, 0.3);
+        }
+        
+        .tip-card h4 {
+            color: #e65100;
+            margin: 0 0 15px 35px;
+            font-size: 1.2rem;
+        }
+        
+        .tips-disclaimer {
+            background-color: #fff8e6;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--warning-color);
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(251, 133, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .tips-disclaimer:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(251, 133, 0, 0.15);
+        }
+        
+        .footer {
+            margin-top: 80px;
+            padding: 30px 0;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 15px;
+            border-top: 1px solid var(--neutral-light);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                max-width: 95%;
+            }
+            
+            header {
+                padding: 30px 0;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .header-icon {
+                margin-top: 30px;
+                margin-right: 0;
+                text-align: center;
+                font-size: 80px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .find-doctor-section, .tips-section {
+                padding: 25px 20px;
+            }
+            
+            .specialist-types, .tips-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">LungDetect</a>
+                <div class="nav-links">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/analysis" class="nav-link">CT Scan Analysis</a>
+                    <a href="/#about" class="nav-link">About</a>
+                    <a href="/contact" class="nav-link active">Contact</a>
+                </div>
+            </nav>
+            
+            <div class="header-content">
+                <div class="header-text">
+                    <h1>Find a Specialist</h1>
+                    <p>Connect with healthcare professionals specializing in lung cancer diagnosis and treatment.</p>
+                </div>
+                <div class="header-icon">
+                    👨‍⚕️
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="find-doctor-section">
+            <div class="section-header">
+                <div class="section-icon">🏥</div>
+                <h2>Find a Lung Cancer Specialist</h2>
+            </div>
+            
+            <div class="doctor-content">
+                <p>If you've received concerning results or need specialized care, connecting with the right healthcare provider is crucial. Our network includes pulmonologists, thoracic surgeons, and oncologists specializing in lung cancer diagnosis and treatment.</p>
+                
+                <div class="specialist-types">
+                    <div class="specialist-card">
+                        <h4>Pulmonologist</h4>
+                        <p>Specializes in diseases affecting the respiratory system, including the diagnosis of lung cancer through various tests and procedures.</p>
+                    </div>
+                    
+                    <div class="specialist-card">
+                        <h4>Thoracic Surgeon</h4>
+                        <p>Performs surgical procedures related to the chest, including lung cancer biopsies and tumor removal operations.</p>
+                    </div>
+                    
+                    <div class="specialist-card">
+                        <h4>Medical Oncologist</h4>
+                        <p>Treats cancer using chemotherapy, targeted therapy, immunotherapy and other medications.</p>
+                    </div>
+                    
+                    <div class="specialist-card">
+                        <h4>Radiation Oncologist</h4>
+                        <p>Specializes in treating cancer with radiation therapy to destroy cancer cells and shrink tumors.</p>
+                    </div>
+                </div>
+                
+                <div class="google-search-cta">
+                    <p>Looking for doctors in your area?</p>
+                    <div class="search-buttons">
+                        <a href="https://www.google.com/search?q=lung+cancer+doctors+near+me" target="_blank" class="google-search-btn">
+                            <span class="google-icon">G</span>
+                            Find Lung Cancer Doctors Near Me
+                        </a>
+                    </div>
+                    <p class="search-tip">This will open Google search in a new tab to help you find lung specialists in your area.</p>
+                </div>
+                
+            </div>
+        </div>
+        
+        <div class="tips-section">
+            <div class="section-header">
+                <div class="section-icon">📋</div>
+                <h2>Tips for Choosing the Right Doctor</h2>
+            </div>
+            
+            <div class="tips-content">
+                <p>Finding the right specialist for lung cancer diagnosis and treatment is crucial. Here are some helpful tips to guide your decision:</p>
+                
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <div class="tip-number">1</div>
+                        <h4>Check Credentials and Experience</h4>
+                        <p>Look for board certification in the relevant specialty and experience treating your specific condition. Ask about the number of similar cases they've treated.</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <div class="tip-number">2</div>
+                        <h4>Consider Hospital Affiliation</h4>
+                        <p>Research the quality of care at the hospitals where the doctor practices. Top doctors are often affiliated with top-rated hospitals and cancer centers.</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <div class="tip-number">3</div>
+                        <h4>Evaluate Communication Style</h4>
+                        <p>Choose a doctor who listens carefully, answers your questions thoroughly, and explains complex medical information in terms you understand.</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <div class="tip-number">4</div>
+                        <h4>Check Insurance Coverage</h4>
+                        <p>Verify that the doctor accepts your insurance plan to avoid unexpected costs. Contact both the doctor's office and your insurance provider.</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <div class="tip-number">5</div>
+                        <h4>Ask About Telemedicine Options</h4>
+                        <p>For follow-up appointments or consultations, check if the doctor offers virtual visits, which can be more convenient for regular check-ins.</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <div class="tip-number">6</div>
+                        <h4>Seek Second Opinions</h4>
+                        <p>Don't hesitate to get a second opinion, especially for serious diagnoses or complex treatments. Most good doctors welcome this practice.</p>
+                    </div>
+                </div>
+                
+                <div class="tips-disclaimer">
+                    <p>Remember that the relationship with your healthcare provider is a partnership. Trust your instincts about the doctor's care and take an active role in your health decisions.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 LungDetect. All rights reserved.</p>
+            <p>This tool is for research purposes only and is not meant to replace professional medical diagnosis</p>
+        </div>
+    </div>
+    
+    <div class="chatbot-toggle" id="chatbot-toggle">
+        <i>💬</i>
+    </div>
+    
+    <div class="chatbot-container chatbot-hidden" id="chatbot-container">
+        <div class="chatbot-header" id="chatbot-header">
+            <div class="chatbot-title">
+                <span>🫁</span>
+                <span>LungCare Assistant</span>
+            </div>
+            <button class="chatbot-close" id="chatbot-close">×</button>
+        </div>
+        <div class="chatbot-body">
+            <div class="chatbot-messages" id="chatbot-messages"></div>
+        </div>
+        <div class="chatbot-input-area">
+            <input type="text" class="chatbot-input" id="chatbot-input" placeholder="Ask about lung cancer...">
+            <button class="chatbot-send-btn" id="chatbot-send-btn">➤</button>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const findDoctorBtn = document.querySelector('#search-doctors-btn');
+            const locateDoctorBtn = document.querySelector('#locate-doctors-btn');
+            const locationStatus = document.querySelector('#location-status');
+            
+            if (findDoctorBtn) {
+                findDoctorBtn.addEventListener('click', function() {
+                    alert('Our specialist directory is coming soon! Please consult with your primary care physician for referrals to lung cancer specialists.');
+                });
+            }
+            
+            if (locateDoctorBtn) {
+                locateDoctorBtn.addEventListener('click', function() {
+                    if ("geolocation" in navigator) {
+                        locationStatus.textContent = "Getting your location...";
+                        locationStatus.className = "location-status loading";
+                        
+                        navigator.geolocation.getCurrentPosition(function(position) {
+                            const latitude = position.coords.latitude;
+                            const longitude = position.coords.longitude;
+                            
+                            locationStatus.textContent = `Location found! Latitude: ${latitude.toFixed(4)}, Longitude: ${longitude.toFixed(4)}`;
+                            locationStatus.className = "location-status success";
+                            
+                            setTimeout(() => {
+                                alert(`In a production app, we would now show lung specialists near your location.\n\nWe'd use your coordinates (${latitude.toFixed(4)}, ${longitude.toFixed(4)}) to query medical directories like Zocdoc, Healthgrades, or your insurance provider's network.`);
+                            }, 1000);
+                            
+                        }, function(error) {
+                            let errorMsg = "Unable to retrieve your location. ";
+                            
+                            switch(error.code) {
+                                case error.PERMISSION_DENIED:
+                                    errorMsg += "Please enable location permissions in your browser.";
+                                    break;
+                                case error.POSITION_UNAVAILABLE:
+                                    errorMsg += "Location information is unavailable.";
+                                    break;
+                                case error.TIMEOUT:
+                                    errorMsg += "The request to get your location timed out.";
+                                    break;
+                                default:
+                                    errorMsg += "An unknown error occurred.";
+                                    break;
+                            }
+                            
+                            locationStatus.textContent = errorMsg;
+                            locationStatus.className = "location-status error";
+                        });
+                    } else {
+                        locationStatus.textContent = "Geolocation is not supported by your browser.";
+                        locationStatus.className = "location-status error";
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
