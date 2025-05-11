@@ -39,7 +39,10 @@ LungScanAI-Detector is an AI-powered web application that analyzes CT scan image
 
 3. Configure the application:
    - Update the API key for the chatbot in `app.py` if needed
-   - Ensure the model file `lung_cancer_model.h5` is available in the root directory
+   - Download the model file:
+     - Due to size limitations, the model file is not included in this repository
+     - Download `lung_cancer_model.h5` from [Google Drive/Other hosting service]
+     - Place the downloaded file in the root directory of the project
 
 4. Run the application:
    ```
