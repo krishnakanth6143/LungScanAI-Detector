@@ -37,19 +37,21 @@ LungScanAI-Detector is an AI-powered web application that analyzes CT scan image
    pip install -r requirements.txt
    ```
 
-3. Configure the application:
-   - Update the API key for the chatbot in `app.py` if needed
-   - Download the model file:
-     - Due to size limitations, the model file is not included in this repository
-     - Download `lung_cancer_model.h5` from [Google Drive/Other hosting service]
-     - Place the downloaded file in the root directory of the project
+3. Download the model file:
+   ```
+   python download_model.py
+   ```
+   Or download manually as described in the Model File Hosting section.
 
-4. Run the application:
+4. Configure the application:
+   - Update the API key for the chatbot in `app.py` if needed
+
+5. Run the application:
    ```
    python app.py
    ```
 
-5. Open your browser and go to `http://127.0.0.1:5000`
+6. Open your browser and go to `http://127.0.0.1:5000`
 
 ## Usage
 
@@ -70,13 +72,29 @@ The application uses a deep learning model trained on a dataset of lung CT scan 
 - Normal lung tissue
 - Squamous Cell Carcinoma
 
+## Model File Hosting
+
+Due to GitHub's file size limitations (100MB), the model file is not stored in this repository. Instead, you have two options:
+
+1. **Option 1**: Run the provided script to download the model automatically:
+   ```
+   python download_model.py
+   ```
+
+2. **Option 2**: Manually download the model:
+   - Download `lung_cancer_model.h5` from [Google Drive/Other hosting service]
+   - Place it in the root directory of the project
+
+Note: If you're a contributor who needs to modify and upload a new model version, please upload it to the shared file hosting service and update the URL in `download_model.py`.
+
 ## Project Structure
 
 ```
 ├── app.py              # Main Flask application
 ├── chatbot.py          # Chatbot implementation
 ├── requirements.txt    # Python dependencies
-├── lung_cancer_model.h5 # Trained deep learning model
+├── lung_cancer_model.h5 # Trained deep learning model (stored with Git LFS)
+├── .gitattributes      # Git LFS tracking configuration
 ├── static/             # Static files (CSS, JS, uploads)
 │   ├── css/
 │   ├── js/

@@ -33,16 +33,16 @@ instance/
 .ipynb_checkpoints
 
 # Model files
-*.h5
+lung_cancer_model.h5
 *.keras
 *.model
 *.pkl
 
 # Image uploads
 static/uploads/*
-!static/uploads/.gitkeep
+!static/uploads/*.png
 uploads/*
-!uploads/.gitkeep
+!uploads/*.png
 
 # IDE specific files
 .idea/
